@@ -17,18 +17,18 @@ async function main() {
     create: {
       email: "admin@example.com",
       password: hashedPassword,
-      name: "Policy Researcher",
+      name: "CSPR Participant",
     },
   });
 
   await prisma.profile.create({
     data: {
-      name: "Policy Researcher",
-      tagline: "Research Analyst & Public Policy Researcher",
-      bio: "Dedicated researcher focused on public finance, economic policy, and data-driven state research.",
-      currentRole: "Research Fellow",
-      currentFocus: ["Public Finance", "Economic Policy", "Data Analysis"],
-      linkedinUrl: "https://www.linkedin.com/in/research-scholar",
+      name: "CSPR Participant",
+      tagline: "Student | Learner | Independent Professional",
+      bio: "A personal space to document learning, experiences, and weekly journal records.",
+      currentRole: "Participant",
+      currentFocus: ["Continuous Learning", "Projects", "Reflections"],
+      linkedinUrl: "",
       email: "admin@example.com",
       theme: "editorial",
     },
@@ -36,16 +36,16 @@ async function main() {
 
   await prisma.journalEntry.create({
     data: {
-      weekNumber: 38,
+      weekNumber: 1,
       startDate: new Date("2026-09-14"),
       endDate: new Date("2026-09-18"),
-      title: "Fiscal Deficit Projections & Sub-National Debt Sustainability",
-      focus: "Completed secondary econometric modelling of debt-to-GSDP ratios across 14 major states.",
-      workCompleted: "Synthesized revenue-expenditure elasticity coefficients.",
-      outcomes: "Produced working paper draft.",
-      reflection: "Discovered noticeable divergence in capital outlay efficiency.",
-      challenges: "Inconsistent reporting formats.",
-      nextWeekFocus: "Expand analysis.",
+      title: "Initial Setup & Core Objectives",
+      focus: "Setting up the portfolio workspace, defining weekly learning goals, and outlining initial project scopes.",
+      workCompleted: "Initialized repository structure, configured design system, and drafted foundational notes.",
+      outcomes: "Completed baseline environment configuration.",
+      reflection: "Clear initial structure makes subsequent iterations much faster.",
+      challenges: "Balancing multiple competing priorities.",
+      nextWeekFocus: "Execute first core milestone deliverables.",
       status: ProjectStatus.PUBLISHED,
       visibility: Visibility.PUBLIC,
       publishedAt: new Date(),
