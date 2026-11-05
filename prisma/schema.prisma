@@ -33,6 +33,7 @@ model Profile {
   linkedinUrl  String?
   email        String?
   resumeUrl    String?
+  theme        String   @default("editorial")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

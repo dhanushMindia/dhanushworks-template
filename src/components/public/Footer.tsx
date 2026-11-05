@@ -18,8 +18,8 @@ const footerLinks = [
   {
     title: "Connect",
     links: [
-      { name: "LinkedIn", href: "https://www.linkedin.com/in/dhanushmendu", external: true },
-      { name: "Email", href: "mailto:dhanush.mendu@gmail.com", external: true },
+      { name: "LinkedIn", href: "https://www.linkedin.com", external: true },
+      { name: "Email", href: "mailto:admin@example.com", external: true },
       { name: "About", href: "/about" },
     ],
   },
@@ -41,7 +41,7 @@ export function Footer() {
               href="/"
               className="font-serif text-2xl tracking-normal text-[var(--text-main)] group hover:text-[var(--accent)] transition-colors"
             >
-              Dhanush Mendu
+              Alex Morgan
             </Link>
             <p className="mt-6 type-body text-base text-[var(--text-muted)] leading-relaxed max-w-sm text-pretty">
               Research, public finance, data analysis and policy — building an evidence-based body of work.
@@ -91,7 +91,7 @@ export function Footer() {
               href="/"
               className="font-serif text-2xl tracking-normal text-[var(--text-main)] group hover:text-[var(--accent)] transition-colors"
             >
-              Dhanush Mendu
+              Alex Morgan
             </Link>
             <p className="mt-4 type-body text-base text-[var(--text-muted)] leading-relaxed max-w-sm text-pretty">
               Research, public finance, data analysis and policy — building an evidence-based body of work.
@@ -135,7 +135,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-20 pt-8 border-t border-structural flex flex-col sm:flex-row items-center justify-between gap-6">
           <p className="type-metadata text-[var(--text-muted)] text-[10px]">
-            © {new Date().getFullYear()} DHANUSH MENDU. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} ALEX MORGAN. ALL RIGHTS RESERVED.
           </p>
           <div className="flex items-center gap-6">
             <Link

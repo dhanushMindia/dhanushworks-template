@@ -23,35 +23,46 @@ const getFileIcon = (fileType: string) => {
 };
 
 export default async function JournalPage() {
-  const [entries, skills, profile] = await Promise.all([
-    prisma.journalEntry.findMany({
-      where: {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-      },
-      orderBy: {
-        startDate: "desc",
-      },
-      include: {
-        projects: {
-          include: {
-            project: {
-              select: {
-                id: true,
-                title: true,
-                slug: true,
+  let entries: any[] = [];
+  let skills: any[] = [];
+  let profile: any = null;
+
+  try {
+    const res = await Promise.all([
+      prisma.journalEntry.findMany({
+        where: {
+          status: "PUBLISHED",
+          visibility: "PUBLIC",
+        },
+        orderBy: {
+          startDate: "desc",
+        },
+        include: {
+          projects: {
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  title: true,
+                  slug: true,
+                },
               },
             },
           },
+          attachments: true,
         },
-        attachments: true,
-      },
-    }),
-    prisma.skill.findMany({
-      take: 8,
-    }),
-    prisma.profile.findFirst(),
-  ]);
+      }),
+      prisma.skill.findMany({
+        take: 8,
+      }),
+      prisma.profile.findFirst(),
+    ]);
+    entries = res[0];
+    skills = res[1];
+    profile = res[2];
+  } catch (err) {
+    // Graceful fallback during build or unconfigured database state
+  }
 
   const entriesByYear = entries.reduce((acc, entry) => {
     const year = new Date(entry.startDate).getFullYear();
@@ -67,7 +78,7 @@ export default async function JournalPage() {
   const latest = entries[0];
   const earliest = entries[entries.length - 1];
   const linkedProjectCount = new Set(
-    entries.flatMap((entry) => entry.projects.map((project) => project.projectId))
+    entries.flatMap((entry: any) => entry.projects.map((project: any) => project.projectId))
   ).size;
 
   return (
@@ -77,13 +88,13 @@ export default async function JournalPage() {
         <ScrollReveal animation="fade-up" className="lg:col-span-7 space-y-4">
           <div className="inline-flex items-center gap-2 border border-structural px-2.5 py-1 bg-[var(--bg-secondary)]/50">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-            <p className="type-metadata text-[var(--text-muted)]">CSPR Fellowship / State Scan Workspace</p>
+            <p className="type-metadata text-[var(--text-muted)]">Research Fellowship / Policy Workspace</p>
           </div>
           <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[var(--text-main)] tracking-tight text-balance">
-            Internship Log & Field Ledger
+            Research Log & Field Ledger
           </h1>
           <p className="type-body text-[var(--text-muted)] text-lg leading-relaxed max-w-2xl pt-2">
-            Weekly continuous record tracking research directives, execution logs, analytical reflections, and deliverables under the guidance of Dr. S Subramanian (Director, CSPR).
+            Weekly continuous record tracking research directives, execution logs, analytical reflections, and deliverables under institutional guidance.
           </p>
         </ScrollReveal>
 
@@ -93,12 +104,12 @@ export default async function JournalPage() {
               CORE DIRECTIVES & MANDATE
             </h3>
             <p className="type-ui text-sm text-[var(--text-muted)] leading-relaxed">
-              <strong>State Scan – Telangana:</strong> Systematic tracking of state public finances, liability ratios, macroeconomic indicators, and district-level economic data for transparent reporting.
+              <strong>State Research:</strong> Systematic tracking of public finances, macroeconomic indicators, and empirical data for transparent reporting and policy analysis.
             </p>
             <div className="pt-2">
               <span className="type-metadata text-[var(--text-faint)] block mb-2">RUNNING SKILLS INVENTORY</span>
               <div className="flex flex-wrap gap-1.5">
-                {["Public Finance", "Data Visualization", "Telangana State Scan", "R & Python", "Fiscal Modeling"].map((s) => (
+                {(["Public Finance", "Data Visualization", "State Research", "R & Python", "Fiscal Modeling"] as string[]).map((s: string) => (
                   <span key={s} className="type-metadata text-[10px] px-2 py-0.5 border border-structural bg-[var(--bg-primary)] text-[var(--text-muted)]">
                     {s}
                   </span>
@@ -112,11 +123,11 @@ export default async function JournalPage() {
       {/* OVERVIEW STATS */}
       <ScrollReveal animation="fade-up">
         <section className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--border-subtle)] border border-structural">
-          {[
+          {([
             ["Timeline Span", earliest && latest ? `${formatMonth(earliest.startDate)} - ${formatMonth(latest.startDate)}` : "Compiling"],
             ["Total Logs Filed", String(entries.length)],
             ["Associated Projects", String(linkedProjectCount)],
-          ].map(([label, value]) => (
+          ] as [string, string][]).map(([label, value]: [string, string]) => (
             <div key={label} className="bg-[var(--bg-primary)] p-6 md:p-8">
               <p className="type-metadata text-[var(--text-faint)]">{label}</p>
               <p className="font-serif text-3xl md:text-4xl text-[var(--text-main)] mt-3">{value}</p>
@@ -146,7 +157,7 @@ export default async function JournalPage() {
               </ScrollReveal>
 
               <ScrollTimelineProgress className="ml-3 md:ml-8 pl-8 md:pl-12 space-y-24">
-                {entriesByYear[year].map((entry) => (
+                {entriesByYear[year].map((entry: any) => (
                   <ScrollReveal key={entry.id} animation="fade-up" delay={80}>
                     <article id={String(entry.weekNumber)} className="relative group space-y-8">
                       <JournalTimelineMarker />
@@ -206,7 +217,7 @@ export default async function JournalPage() {
                             {entry.projects.length > 0 && (
                               <div className="pt-3 border-t border-structural flex flex-wrap items-center gap-2">
                                 <span className="type-metadata text-[var(--text-faint)] text-[10px]">Linked Work:</span>
-                                {entry.projects.map((p) => (
+                                {entry.projects.map((p: any) => (
                                   <Link
                                     key={p.projectId}
                                     href={`/work/${p.project.slug}`}

@@ -124,7 +124,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             value={formData.currentRole}
             onChange={(e) => setFormData({ ...formData, currentRole: e.target.value })}
             className="w-full px-3 py-2 border border-[var(--border-strong)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-main)] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g. Finance Fellow at CSPR"
+            placeholder="e.g. Senior Research Fellow"
           />
         </div>
 

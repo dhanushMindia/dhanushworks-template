@@ -68,7 +68,7 @@ export function Header() {
                 className="group flex flex-col"
               >
                 <span className="font-serif text-2xl tracking-normal text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
-                  Dhanush Mendu
+                  Research Portfolio
                 </span>
                 <span className="type-metadata text-[10px] text-[var(--text-muted)] -mt-1 hidden sm:block">
                   Research & Analysis Archive

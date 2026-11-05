@@ -8,66 +8,76 @@ import { FiscalScatterPlot, DistributionCurve } from "@/components/ui/DataGraphi
 import { ScrollParallax, ScrollScale, ScrollTypography } from "@/components/ui/ScrollPhysics";
 
 export default async function HomePage() {
-  const [featuredProjects, recentArticles, recentJournals, topics, profile] = await Promise.all([
-    prisma.project.findMany({
-      where: {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-      },
-      orderBy: {
-        updatedAt: "desc",
-      },
-      take: 4,
-      include: {
-        topics: {
-          include: { topic: true },
+  let featuredProjects: any[] = [];
+  let recentArticles: any[] = [];
+  let recentJournals: any[] = [];
+  let topics: any[] = [];
+  let profile = null;
+
+  try {
+    [featuredProjects, recentArticles, recentJournals, topics, profile] = await Promise.all([
+      prisma.project.findMany({
+        where: {
+          status: "PUBLISHED",
+          visibility: "PUBLIC",
         },
-        skills: {
-          include: { skill: true },
+        orderBy: {
+          updatedAt: "desc",
         },
-      },
-    }),
-    prisma.article.findMany({
-      where: {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-      },
-      orderBy: {
-        publishedAt: "desc",
-      },
-      take: 3,
-      include: {
-        topics: {
-          include: { topic: true },
+        take: 4,
+        include: {
+          topics: {
+            include: { topic: true },
+          },
+          skills: {
+            include: { skill: true },
+          },
         },
-      },
-    }),
-    prisma.journalEntry.findMany({
-      where: {
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-      },
-      orderBy: {
-        weekNumber: "desc",
-      },
-      take: 4,
-    }),
-    prisma.topic.findMany({
-      where: {
-        OR: [
-          { projects: { some: { project: { status: "PUBLISHED", visibility: "PUBLIC" } } } },
-          { articles: { some: { article: { status: "PUBLISHED", visibility: "PUBLIC" } } } },
-        ],
-      },
-      include: {
-        _count: {
-          select: { projects: true, articles: true },
+      }),
+      prisma.article.findMany({
+        where: {
+          status: "PUBLISHED",
+          visibility: "PUBLIC",
         },
-      },
-      orderBy: { name: "asc" },
-    }),
-    prisma.profile.findFirst(),
-  ]);
+        orderBy: {
+          publishedAt: "desc",
+        },
+        take: 3,
+        include: {
+          topics: {
+            include: { topic: true },
+          },
+        },
+      }),
+      prisma.journalEntry.findMany({
+        where: {
+          status: "PUBLISHED",
+          visibility: "PUBLIC",
+        },
+        orderBy: {
+          weekNumber: "desc",
+        },
+        take: 4,
+      }),
+      prisma.topic.findMany({
+        where: {
+          OR: [
+            { projects: { some: { project: { status: "PUBLISHED", visibility: "PUBLIC" } } } },
+            { articles: { some: { article: { status: "PUBLISHED", visibility: "PUBLIC" } } } },
+          ],
+        },
+        include: {
+          _count: {
+            select: { projects: true, articles: true },
+          },
+        },
+        orderBy: { name: "asc" },
+      }),
+      prisma.profile.findFirst(),
+    ]);
+  } catch {
+    // Fallback empty state for uninitialized database during build
+  }
 
   const [leadProject, ...otherProjects] = featuredProjects;
   const latestArticle = recentArticles[0];
@@ -90,7 +100,7 @@ export default async function HomePage() {
             <ScrollReveal animation="fade-up" delay={100}>
               <div className="space-y-6">
                 <h1 className="type-display text-[var(--text-main)] font-serif">
-                  {profile?.name || "Dhanush Mendu"}
+                  {profile?.name || "Policy Researcher"}
                 </h1>
                 <p className="font-serif text-2xl md:text-3xl lg:text-4xl leading-tight text-[var(--text-main)] max-w-4xl text-balance">
                   {profile?.bio
@@ -104,7 +114,7 @@ export default async function HomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--border-subtle)] border border-structural max-w-3xl">
                 {[
                   ["Current focus", "Public finances, tracking state liabilities and local economic health."],
-                  ["State Scan", "Working with CSPR to analyze and synthesize macro trends in Telangana."],
+                  ["Research Focus", "Analyzing and synthesizing macro trends in public policy and economics."],
                   ["Archive state", `${featuredProjects.length} projects / ${recentArticles.length} essays / ${recentJournals.length} logs`],
                 ].map(([label, value]) => (
                   <div key={label} className="bg-[var(--bg-primary)] p-5">
@@ -229,7 +239,7 @@ export default async function HomePage() {
                     <span className="type-metadata px-2.5 py-1 bg-[var(--bg-secondary)] border border-structural">
                       Featured inquiry
                     </span>
-                    {leadProject.topics.map((t) => (
+                    {leadProject.topics.map((t: any) => (
                       <span key={t.topicId} className="type-metadata text-[var(--text-muted)]">
                         {t.topic.name}
                       </span>
@@ -263,7 +273,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="lg:col-span-7 divide-y divide-structural border-y border-structural">
-              {topics.map((topic, index) => (
+              {topics.map((topic: any, index: number) => (
                 <Link
                   href="/research"
                   key={topic.id}

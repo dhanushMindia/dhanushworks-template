@@ -37,6 +37,7 @@ export async function POST(request: Request) {
           linkedinUrl: data.linkedinUrl,
           email: data.email,
           resumeUrl: data.resumeUrl,
+          theme: data.theme !== undefined ? data.theme : undefined,
         }
       });
     } else {
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
           linkedinUrl: data.linkedinUrl || "",
           email: data.email || "",
           resumeUrl: data.resumeUrl || "",
+          theme: data.theme || "editorial",
         }
       });
     }

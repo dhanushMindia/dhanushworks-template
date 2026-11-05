@@ -25,7 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dhanush | Research & Work",
+  title: "Portfolio | Research & Work",
   description: "Personal research portfolio and operating system.",
 };
 
