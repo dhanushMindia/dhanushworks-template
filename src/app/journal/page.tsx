@@ -6,7 +6,6 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ScrollTimelineProgress } from "@/components/ui/ScrollPhysics";
 import { JournalTimelineMarker } from "@/components/ui/JournalTimelineMarker";
 
-// Helper for attachment icons
 const getFileIcon = (fileType: string) => {
   switch (fileType?.toUpperCase()) {
     case "PDF":
@@ -24,7 +23,6 @@ const getFileIcon = (fileType: string) => {
 
 export default async function JournalPage() {
   let entries: any[] = [];
-  let skills: any[] = [];
   let profile: any = null;
 
   try {
@@ -38,28 +36,13 @@ export default async function JournalPage() {
           startDate: "desc",
         },
         include: {
-          projects: {
-            include: {
-              project: {
-                select: {
-                  id: true,
-                  title: true,
-                  slug: true,
-                },
-              },
-            },
-          },
           attachments: true,
         },
-      }),
-      prisma.skill.findMany({
-        take: 8,
       }),
       prisma.profile.findFirst(),
     ]);
     entries = res[0];
-    skills = res[1];
-    profile = res[2];
+    profile = res[1];
   } catch (err) {
     // Graceful fallback during build or unconfigured database state
   }
@@ -77,13 +60,17 @@ export default async function JournalPage() {
 
   const latest = entries[0];
   const earliest = entries[entries.length - 1];
-  const linkedProjectCount = new Set(
-    entries.flatMap((entry: any) => entry.projects.map((project: any) => project.projectId))
-  ).size;
+
+  function formatMonth(dateStr: string | Date) {
+    return new Date(dateStr).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
+
+  function formatDate(dateStr: string | Date) {
+    return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
 
   return (
     <div className="pt-8 md:pt-16 mx-auto w-full max-w-[1400px] px-6 lg:px-12 mb-24 space-y-16">
-      {/* 1. DASHBOARD / MASTHEAD */}
       <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 border-b border-structural pb-10">
         <ScrollReveal animation="fade-up" className="lg:col-span-7 space-y-4">
           <div className="inline-flex items-center gap-2 border border-structural px-2.5 py-1 bg-[var(--bg-secondary)]/50">
@@ -97,7 +84,6 @@ export default async function JournalPage() {
             Weekly continuous record tracking research directives, execution logs, analytical reflections, and deliverables under institutional guidance.
           </p>
         </ScrollReveal>
-
         <ScrollReveal animation="fade-left" delay={120} className="lg:col-span-5 flex flex-col justify-end">
           <div className="border border-structural p-6 bg-[var(--bg-secondary)]/20 space-y-4">
             <h3 className="type-metadata text-[var(--text-main)] font-semibold border-b border-structural pb-2">
@@ -107,9 +93,9 @@ export default async function JournalPage() {
               <strong>State Research:</strong> Systematic tracking of public finances, macroeconomic indicators, and empirical data for transparent reporting and policy analysis.
             </p>
             <div className="pt-2">
-              <span className="type-metadata text-[var(--text-faint)] block mb-2">RUNNING SKILLS INVENTORY</span>
+              <span className="type-metadata text-[var(--text-faint)] block mb-2">RUNNING FOCUS INVENTORY</span>
               <div className="flex flex-wrap gap-1.5">
-                {(["Public Finance", "Data Visualization", "State Research", "R & Python", "Fiscal Modeling"] as string[]).map((s: string) => (
+                {(profile?.currentFocus || ["Public Finance", "Data Analysis", "Economic Policy"] as string[]).map((s: string) => (
                   <span key={s} className="type-metadata text-[10px] px-2 py-0.5 border border-structural bg-[var(--bg-primary)] text-[var(--text-muted)]">
                     {s}
                   </span>
@@ -120,14 +106,12 @@ export default async function JournalPage() {
         </ScrollReveal>
       </header>
 
-      {/* OVERVIEW STATS */}
       <ScrollReveal animation="fade-up">
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--border-subtle)] border border-structural">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[var(--border-subtle)] border border-structural">
           {([
             ["Timeline Span", earliest && latest ? `${formatMonth(earliest.startDate)} - ${formatMonth(latest.startDate)}` : "Compiling"],
             ["Total Logs Filed", String(entries.length)],
-            ["Associated Projects", String(linkedProjectCount)],
-          ] as [string, string][]).map(([label, value]: [string, string]) => (
+          ] as [string, string][]).map(([label, value]) => (
             <div key={label} className="bg-[var(--bg-primary)] p-6 md:p-8">
               <p className="type-metadata text-[var(--text-faint)]">{label}</p>
               <p className="font-serif text-3xl md:text-4xl text-[var(--text-main)] mt-3">{value}</p>
@@ -136,7 +120,6 @@ export default async function JournalPage() {
         </section>
       </ScrollReveal>
 
-      {/* 2 & 3. PROJECT LOG & WEEKLY REFLECTIONS */}
       {entries.length === 0 ? (
         <div className="border border-dashed border-structural p-12 text-center">
           <p className="type-body text-[var(--text-muted)] italic">
@@ -162,7 +145,6 @@ export default async function JournalPage() {
                     <article id={String(entry.weekNumber)} className="relative group space-y-8">
                       <JournalTimelineMarker />
 
-                      {/* Header row */}
                       <div className="flex flex-col md:flex-row md:items-baseline justify-between border-b border-structural pb-4 gap-4">
                         <div className="flex items-center gap-3">
                           <span className="type-metadata text-sm font-bold bg-[var(--bg-secondary)] border border-structural px-2.5 py-1 text-[var(--text-main)]">
@@ -177,9 +159,7 @@ export default async function JournalPage() {
                         </span>
                       </div>
 
-                      {/* 2-Column Content Grid: Project Log + Weekly Reflection */}
                       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        {/* Left: Project Log (Context -> Action -> Impact) */}
                         <div className="lg:col-span-7 space-y-6">
                           <div className="border border-structural p-6 bg-[var(--bg-primary)] space-y-5">
                             <h4 className="type-metadata text-[var(--text-main)] font-semibold border-b border-structural pb-2 flex items-center gap-2">
@@ -213,24 +193,8 @@ export default async function JournalPage() {
                                 </p>
                               </div>
                             )}
-
-                            {entry.projects.length > 0 && (
-                              <div className="pt-3 border-t border-structural flex flex-wrap items-center gap-2">
-                                <span className="type-metadata text-[var(--text-faint)] text-[10px]">Linked Work:</span>
-                                {entry.projects.map((p: any) => (
-                                  <Link
-                                    key={p.projectId}
-                                    href={`/work/${p.project.slug}`}
-                                    className="type-metadata text-[10px] border border-structural hover:border-[var(--text-main)] bg-[var(--bg-secondary)]/50 px-2 py-0.5 transition-colors"
-                                  >
-                                    {p.project.title} ↗
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
                           </div>
 
-                          {/* REPOSITORY & ATTACHMENTS */}
                           {entry.attachments && entry.attachments.length > 0 && (
                             <div className="border border-structural p-5 bg-[var(--bg-primary)] space-y-4">
                               <h4 className="type-metadata text-[var(--text-main)] font-semibold border-b border-structural pb-2 flex items-center gap-2 text-xs">
@@ -241,10 +205,10 @@ export default async function JournalPage() {
                                 {entry.attachments.map((attachment: any) => (
                                   <a
                                     key={attachment.id}
-                                    href={attachment.url}
+                                    href={attachment.fileUrl || attachment.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-3 p-3 border border-structural bg-[var(--bg-secondary)]/30 hover:bg-[var(--bg-secondary)] transition-colors group"
+                                    className="flex items-center gap-3 p-3 border border-structural bg-[var(--bg-secondary)]/35 hover:bg-[var(--bg-secondary)] transition-colors group"
                                   >
                                     <span className="text-xl md:text-2xl group-hover:scale-110 transition-transform">
                                       {getFileIcon(attachment.fileType)}
@@ -254,7 +218,7 @@ export default async function JournalPage() {
                                         {attachment.title}
                                       </span>
                                       <span className="type-metadata text-[10px] text-[var(--text-muted)] mt-0.5">
-                                        {attachment.fileType} {attachment.size > 0 && `• ${(attachment.size / 1024).toFixed(1)} KB`}
+                                        {attachment.fileType}
                                       </span>
                                     </div>
                                   </a>
@@ -264,7 +228,6 @@ export default async function JournalPage() {
                           )}
                         </div>
 
-                        {/* Right: Weekly Reflection & Learning Ledger */}
                         <div className="lg:col-span-5 space-y-6">
                           <div className="border border-structural p-6 bg-[var(--bg-secondary)]/15 space-y-5">
                             <h4 className="type-metadata text-[var(--text-main)] font-semibold border-b border-structural pb-2 flex items-center gap-2">
@@ -311,19 +274,4 @@ export default async function JournalPage() {
       )}
     </div>
   );
-}
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatMonth(date: Date) {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    year: "numeric",
-  });
 }

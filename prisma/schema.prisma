@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,6 +6,23 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProgressStatus {
+  PLANNING
+  ONGOING
+  COMPLETED
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
 }
 
 model User {
@@ -38,102 +52,24 @@ model Profile {
   updatedAt    DateTime @updatedAt
 }
 
-model Project {
-  id               String                @id @default(cuid())
-  title            String
-  slug             String                @unique
-  subtitle         String?
-  shortDescription String                @db.Text
-  status           ProjectStatus         @default(DRAFT)
-  progressStatus   ProgressStatus        @default(ONGOING)
-  visibility       Visibility            @default(PRIVATE)
-  featured         Boolean               @default(false)
-  featuredOrder    Int?
-  projectType      String?
-  organization     String?
-  role             String?
-  startDate        DateTime?
-  endDate          DateTime?
-  coverImageUrl    String?
-  blocks           Json                  @default("[]")
-  topics           ProjectTopic[]
-  skills           ProjectSkill[]
-  tags             ProjectTag[]
-  journalEntries   JournalEntryProject[]
-  relatedProjects  ProjectRelation[]     @relation("ProjectRelations")
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  publishedAt      DateTime?
-}
-
-model Article {
-  id            String         @id @default(cuid())
-  title         String
-  slug          String         @unique
-  subtitle      String?
-  coverImageUrl String?
-  content       Json           @default("[]")
-  status        ProjectStatus  @default(DRAFT)
-  visibility    Visibility     @default(PRIVATE)
-  readingTime   Int?
-  topics        ArticleTopic[]
-  tags          ArticleTag[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  publishedAt   DateTime?
-}
-
 model JournalEntry {
-  id            String                @id @default(cuid())
-  weekNumber    Int
+  id            String         @id @default(cuid())
+  weekNumber    Int            @unique
   startDate     DateTime
   endDate       DateTime
   title         String
-  focus         String?               @db.Text
-  workCompleted String                @db.Text
-  outcomes      String?               @db.Text
-  reflection    String?               @db.Text
-  challenges    String?               @db.Text
-  nextWeekFocus String?               @db.Text
-  status        ProjectStatus         @default(DRAFT)
-  visibility    Visibility            @default(PRIVATE)
-  projects      JournalEntryProject[]
-  skills        JournalEntrySkill[]
+  focus         String?        @db.Text
+  workCompleted String         @db.Text
+  outcomes      String?        @db.Text
+  reflection    String?        @db.Text
+  challenges    String?        @db.Text
+  nextWeekFocus String?        @db.Text
+  status        ProjectStatus  @default(DRAFT)
+  visibility    Visibility     @default(PRIVATE)
   attachments   Attachment[]
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   publishedAt   DateTime?
-
-  @@unique([weekNumber])
-}
-
-model Topic {
-  id          String         @id @default(cuid())
-  name        String         @unique
-  slug        String         @unique
-  description String?        @db.Text
-  projects    ProjectTopic[]
-  articles    ArticleTopic[]
-  createdAt   DateTime       @default(now())
-}
-
-model Skill {
-  id             String              @id @default(cuid())
-  name           String              @unique
-  slug           String              @unique
-  category       String?
-  projects       ProjectSkill[]
-  journalEntries JournalEntrySkill[]
-  createdAt      DateTime            @default(now())
-}
-
-model Tag {
-  id        String       @id @default(cuid())
-  name      String       @unique
-  slug      String       @unique
-  projects  ProjectTag[]
-  articles  ArticleTag[]
-  createdAt DateTime     @default(now())
 }
 
 model MediaAsset {
@@ -151,115 +87,11 @@ model MediaAsset {
   updatedAt   DateTime   @updatedAt
 }
 
-model Source {
-  id              String    @id @default(cuid())
-  title           String
-  author          String?
-  organization    String?
-  publicationDate DateTime?
-  url             String?
-  citationText    String?   @db.Text
-  notes           String?   @db.Text
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-}
-
-// Relationship tables
-model ProjectTopic {
-  projectId String
-  topicId   String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  topic     Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, topicId])
-}
-
-model ProjectSkill {
-  projectId String
-  skillId   String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, skillId])
-}
-
-model ProjectTag {
-  projectId String
-  tagId     String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, tagId])
-}
-
-model ArticleTopic {
-  articleId String
-  topicId   String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  topic     Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@id([articleId, topicId])
-}
-
-model ArticleTag {
-  articleId String
-  tagId     String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([articleId, tagId])
-}
-
-model JournalEntryProject {
-  journalEntryId String
-  projectId      String
-  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
-  project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@id([journalEntryId, projectId])
-}
-
-model JournalEntrySkill {
-  journalEntryId String
-  skillId        String
-  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
-  skill          Skill        @relation(fields: [skillId], references: [id], onDelete: Cascade)
-
-  @@id([journalEntryId, skillId])
-}
-
-model ProjectRelation {
-  projectId        String
-  relatedProjectId String
-  project          Project @relation("ProjectRelations", fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, relatedProjectId])
-}
-
-enum ProjectStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-enum ProgressStatus {
-  PLANNING
-  ONGOING
-  COMPLETED
-}
-
-enum Visibility {
-  PUBLIC
-  UNLISTED
-  PRIVATE
-}
-
 model Attachment {
   id             String        @id @default(cuid())
   title          String
-  url            String
+  fileUrl        String
   fileType       String
-  size           Int
   journalEntryId String
   journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
   createdAt      DateTime      @default(now())
@@ -268,33 +100,33 @@ model Attachment {
 model Folder {
   id        String   @id @default(cuid())
   name      String
-  icon      String?
-  color     String?
+  icon      String?  @default("Folder")
+  color     String?  @default("default")
   parentId  String?
   parent    Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children  Folder[] @relation("FolderHierarchy")
-  notes     Note[]
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   order     Int      @default(0)
+  notes     Note[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Note {
-  id          String   @id @default(cuid())
-  title       String
-  icon        String?
-  content     Json     @default("[]")
-  folderId    String?
-  folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isFavorite  Boolean  @default(false)
-  isArchived  Boolean  @default(false)
-  coverImage  String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  lastEditedAt DateTime @default(now())
+  id            String    @id @default(cuid())
+  title         String    @default("Untitled")
+  content       Json      @default("[]")
+  icon          String?
+  coverImage    String?
+  folderId      String?
+  folder        Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isFavorite    Boolean   @default(false)
+  isArchived    Boolean   @default(false)
+  order         Int       @default(0)
+  lastEditedAt  DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }

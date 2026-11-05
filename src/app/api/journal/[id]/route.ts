@@ -20,19 +20,6 @@ export async function GET(
   const journalEntry = await prisma.journalEntry.findFirst({
     where,
     include: {
-      projects: {
-        include: {
-          project: {
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              shortDescription: true,
-            },
-          },
-        },
-      },
-      skills: { include: { skill: true } },
       attachments: true,
     },
   });
@@ -66,8 +53,6 @@ export async function PUT(
       nextWeekFocus,
       status,
       visibility,
-      projectIds,
-      skillIds,
       attachments,
     } = body;
 
@@ -87,32 +72,13 @@ export async function PUT(
       updateData.publishedAt = new Date();
     }
 
-    if (projectIds !== undefined) {
-      await prisma.journalEntryProject.deleteMany({ where: { journalEntryId: id } });
-      updateData.projects = {
-        create: projectIds.map((projectId: string) => ({
-          project: { connect: { id: projectId } },
-        })),
-      };
-    }
-
-    if (skillIds !== undefined) {
-      await prisma.journalEntrySkill.deleteMany({ where: { journalEntryId: id } });
-      updateData.skills = {
-        create: skillIds.map((skillId: string) => ({
-          skill: { connect: { id: skillId } },
-        })),
-      };
-    }
-
     if (attachments !== undefined) {
       await prisma.attachment.deleteMany({ where: { journalEntryId: id } });
       updateData.attachments = {
         create: attachments.map((a: any) => ({
           title: a.title,
-          url: a.url,
-          fileType: a.fileType,
-          size: a.size || 0,
+          fileUrl: a.fileUrl || a.url,
+          fileType: a.fileType || "document",
         })),
       };
     }
@@ -120,19 +86,12 @@ export async function PUT(
     const journalEntry = await prisma.journalEntry.update({
       where: { id },
       data: updateData,
-      include: {
-        projects: { include: { project: true } },
-        skills: { include: { skill: true } },
-        attachments: true,
-      },
+      include: { attachments: true },
     });
 
     return NextResponse.json({ journalEntry });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to update journal entry" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
@@ -150,9 +109,6 @@ export async function DELETE(
     await prisma.journalEntry.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to delete journal entry" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

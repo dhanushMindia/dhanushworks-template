@@ -5,16 +5,10 @@ import Link from "next/link";
 export default async function AdminJournalPage() {
   const entries = await prisma.journalEntry.findMany({
     orderBy: { startDate: "desc" },
-    include: {
-      projects: {
-        include: { project: true },
-      },
-    },
   });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-serif text-[var(--text-main)] mb-2">
@@ -32,7 +26,6 @@ export default async function AdminJournalPage() {
         </Link>
       </div>
 
-      {/* Entries list */}
       {entries.length === 0 ? (
         <div className="bg-[var(--bg-primary)] border border-structural rounded-lg p-12 text-center">
           <p className="text-[var(--text-muted)] mb-4">
@@ -82,12 +75,6 @@ export default async function AdminJournalPage() {
               </div>
 
               <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
-                {entry.projects.length > 0 && (
-                  <span>
-                    {entry.projects.length} project
-                    {entry.projects.length !== 1 ? "s" : ""}
-                  </span>
-                )}
                 <span>
                   Updated{" "}
                   {new Date(entry.updatedAt).toLocaleDateString("en-US", {
@@ -105,15 +92,14 @@ export default async function AdminJournalPage() {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const colors = {
-    DRAFT: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-    PUBLISHED: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-    ARCHIVED: "bg-[var(--bg-secondary)] text-[var(--text-muted)]",
-  };
-
+  const isDraft = status === "DRAFT";
   return (
     <span
-      className={`text-xs px-2 py-0.5 rounded font-medium ${colors[status as keyof typeof colors] || colors.DRAFT}`}
+      className={`font-mono text-[10px] px-2 py-0.5 border uppercase tracking-wider ${
+        isDraft
+          ? "border-amber-500/40 text-amber-700 dark:text-amber-400 bg-amber-500/10"
+          : "border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10"
+      }`}
     >
       {status}
     </span>
@@ -121,23 +107,16 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function VisibilityBadge({ visibility }: { visibility: string }) {
-  const colors = {
-    PUBLIC: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-    UNLISTED: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-    PRIVATE: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-  };
-
-  const icons = {
-    PUBLIC: "🌐",
-    UNLISTED: "🔗",
-    PRIVATE: "🔒",
-  };
-
+  const isPrivate = visibility === "PRIVATE";
   return (
     <span
-      className={`text-xs px-2 py-0.5 rounded font-medium ${colors[visibility as keyof typeof colors] || colors.PRIVATE}`}
+      className={`font-mono text-[10px] px-2 py-0.5 border uppercase tracking-wider ${
+        isPrivate
+          ? "border-purple-500/40 text-purple-700 dark:text-purple-400 bg-purple-500/10"
+          : "border-blue-500/40 text-blue-700 dark:text-blue-400 bg-blue-500/10"
+      }`}
     >
-      {icons[visibility as keyof typeof icons]} {visibility}
+      {visibility}
     </span>
   );
 }

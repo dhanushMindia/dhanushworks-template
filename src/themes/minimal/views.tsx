@@ -1,12 +1,11 @@
 import Link from 'next/link';
 
 export function MinimalHome({ data }: { data: any }) {
-  const { featuredProjects, recentArticles, recentJournals, topics, profile } = data;
-  const leadProject = featuredProjects[0];
+  const { profile, recentJournals = [] } = data;
+  const latestJournal = recentJournals[0];
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans pt-12 pb-24 px-6 md:px-16 lg:px-24">
-      {/* Header */}
       <header className="max-w-5xl mx-auto border-b border-slate-200 pb-8 mb-16 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
           <span className="text-xs uppercase tracking-widest text-slate-500 font-mono">
@@ -17,49 +16,51 @@ export function MinimalHome({ data }: { data: any }) {
           </h1>
         </div>
         <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link href="/work" className="hover:text-slate-900 transition-colors">Work</Link>
           <Link href="/journal" className="hover:text-slate-900 transition-colors">Journal</Link>
-          <Link href="/research" className="hover:text-slate-900 transition-colors">Research</Link>
+          {profile?.email && <a href={`mailto:${profile.email}`} className="hover:text-slate-900 transition-colors">Contact</a>}
         </nav>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-5xl mx-auto space-y-16">
-        {leadProject && (
+        {latestJournal && (
           <section className="border border-slate-200 rounded-2xl p-8 bg-slate-50/50 space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono px-3 py-1 bg-slate-900 text-white rounded-full">Featured Project</span>
-              <span className="text-xs text-slate-500 font-mono">ID: {leadProject.slug}</span>
+              <span className="text-xs font-mono px-3 py-1 bg-slate-900 text-white rounded-full">Latest Field Note</span>
+              <span className="text-xs text-slate-500 font-mono">WEEK {String(latestJournal.weekNumber).padStart(2, '0')}</span>
             </div>
             <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-              <Link href={`/work/${leadProject.slug}`} className="hover:text-blue-600 transition-colors">{leadProject.title}</Link>
+              <Link href="/journal" className="hover:text-blue-600 transition-colors">{latestJournal.title}</Link>
             </h2>
             <p className="text-slate-600 text-base leading-relaxed max-w-3xl">
-              {leadProject.shortDescription}
+              {latestJournal.focus}
             </p>
             <div>
-              <Link href={`/work/${leadProject.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 hover:gap-3 transition-all">
-                View project details &rarr;
+              <Link href="/journal" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 hover:gap-3 transition-all">
+                View journal archive &rarr;
               </Link>
             </div>
           </section>
         )}
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {topics.map((t: any) => (
-            <div key={t.id} className="p-6 border border-slate-200 rounded-xl bg-white space-y-3">
-              <h3 className="font-semibold text-slate-900 text-lg">{t.name}</h3>
-              <p className="text-xs font-mono text-slate-500">{t._count.projects} projects / {t._count.articles} articles</p>
+        {profile?.currentFocus && profile.currentFocus.length > 0 && (
+          <section className="border-t border-slate-200 pt-8 space-y-4">
+            <h3 className="text-xs uppercase font-mono tracking-wider text-slate-500">Core Focus Areas</h3>
+            <div className="flex flex-wrap gap-2">
+              {profile.currentFocus.map((f: string) => (
+                <span key={f} className="text-xs font-mono px-3 py-1 bg-slate-100 text-slate-700 rounded-md">
+                  {f}
+                </span>
+              ))}
             </div>
-          ))}
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );
 }
 
 export function MinimalJournalArchive({ data }: { data: any }) {
-  const { entries } = data;
+  const { entries = [] } = data;
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans py-16 px-6 md:px-16 lg:px-24">
       <div className="max-w-4xl mx-auto space-y-12">
