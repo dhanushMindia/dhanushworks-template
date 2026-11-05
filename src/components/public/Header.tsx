@@ -6,11 +6,8 @@ import { useState, useEffect, useCallback } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const navigation = [
-  { name: "Work", href: "/work" },
-  { name: "Research", href: "/research" },
+  { name: "Home", href: "/" },
   { name: "Journal", href: "/journal" },
-  { name: "About", href: "/about" },
-  { name: "Archive", href: "/archive" },
 ];
 
 export function Header() {
@@ -19,7 +16,6 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Do not render public header on admin pages (Auth will render this fine if needed, but lets skip on /admin)
   const isAdmin = pathname?.startsWith("/admin") || pathname?.startsWith("/auth");
 
   useEffect(() => {
@@ -68,10 +64,10 @@ export function Header() {
                 className="group flex flex-col"
               >
                 <span className="font-serif text-2xl tracking-normal text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
-                  Research Portfolio
+                  Portfolio
                 </span>
                 <span className="type-metadata text-[10px] text-[var(--text-muted)] -mt-1 hidden sm:block">
-                  Research & Analysis Archive
+                  Chronicle & Journal
                 </span>
               </Link>
             </div>
@@ -119,7 +115,7 @@ export function Header() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                <span className="font-mono text-[10px] uppercase tracking-wider hidden lg:inline">Catalog</span>
+                <span className="font-mono text-[10px] uppercase tracking-wider hidden lg:inline">Search</span>
                 <kbd className="font-mono text-[9px] px-1 py-0.2 bg-[var(--bg-primary)] border border-structural rounded text-[var(--text-faint)]">
                   ⌘K
                 </kbd>
@@ -188,17 +184,14 @@ export function Header() {
         )}
       </header>
 
-      {/* Search Modal */}
-      {isSearchOpen && (
-        <SearchModal onClose={() => setIsSearchOpen(false)} />
-      )}
+      {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} />}
     </>
   );
 }
 
 function SearchModal({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -235,17 +228,15 @@ function SearchModal({ onClose }: { onClose: () => void }) {
         className="relative w-full max-w-2xl bg-[var(--bg-primary)] border border-structural-strong shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Bar */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-structural bg-[var(--bg-secondary)]/40">
           <span className="type-metadata text-[10px] text-[var(--text-muted)]">
-            Archival Dossier Search Console
+            Search Journal & Records
           </span>
           <kbd className="font-mono text-[10px] text-[var(--text-faint)] border border-structural px-1.5 py-0.5 bg-[var(--bg-primary)]">
-            ESC to close
+            ESC
           </kbd>
         </div>
 
-        {/* Input area */}
         <div className="flex items-center gap-3 px-6 py-4 border-b border-structural">
           <svg className="w-5 h-5 text-[var(--text-muted)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -254,18 +245,17 @@ function SearchModal({ onClose }: { onClose: () => void }) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search projects, research monographs, field records..."
+            placeholder="Search journal entries..."
             className="w-full bg-transparent text-[var(--text-main)] placeholder:text-[var(--text-faint)] focus:outline-none font-serif text-lg md:text-xl"
             autoFocus
           />
         </div>
 
-        {/* Results Stream */}
         {query.trim() ? (
           <div className="max-h-[60vh] overflow-y-auto divide-y divide-structural">
             {isLoading ? (
               <div className="p-8 text-center type-metadata text-[var(--text-muted)]">
-                Executing Catalog Query…
+                Searching...
               </div>
             ) : results.length > 0 ? (
               <div className="p-2 space-y-1">
@@ -289,19 +279,13 @@ function SearchModal({ onClose }: { onClose: () => void }) {
                         </div>
                       )}
                     </div>
-                    <span className="text-[var(--text-faint)] group-hover:text-[var(--text-main)] group-hover:translate-x-1 transition-all text-xs">
-                      →
-                    </span>
                   </Link>
                 ))}
               </div>
             ) : (
               <div className="p-12 text-center space-y-2">
                 <p className="type-body text-[var(--text-muted)] italic text-sm">
-                  No verified records matching &ldquo;{query}&rdquo;
-                </p>
-                <p className="type-metadata text-[var(--text-faint)] text-[10px]">
-                  Refine query terms or browse categories directly.
+                  No matching entries found for &ldquo;{query}&rdquo;
                 </p>
               </div>
             )}
@@ -309,19 +293,11 @@ function SearchModal({ onClose }: { onClose: () => void }) {
         ) : (
           <div className="p-8 text-center space-y-3 bg-[var(--bg-secondary)]/10">
             <p className="type-metadata text-[var(--text-muted)]">
-              Index includes Project Dossiers, Policy Monographs, Field Records, and Topics
+              Search journal logs and entries
             </p>
           </div>
         )}
       </div>
     </div>
   );
-}
-
-interface SearchResult {
-  id: string;
-  type: "project" | "article" | "journal" | "topic";
-  title: string;
-  description?: string;
-  href: string;
 }
