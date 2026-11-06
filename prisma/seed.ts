@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Starting seed with neutral template data...");
+  console.log("Starting seed with Dribbble-grade Creative Studio data...");
 
   await prisma.journalEntry.deleteMany({});
   await prisma.profile.deleteMany({});
@@ -17,42 +17,74 @@ async function main() {
     create: {
       email: "admin@example.com",
       password: hashedPassword,
-      name: "CSPR Participant",
+      name: "Dhanush Mendu",
     },
   });
 
   await prisma.profile.create({
     data: {
-      name: "CSPR Participant",
-      tagline: "Student | Learner | Independent Professional",
-      bio: "A personal space to document learning, experiences, and weekly journal records.",
-      currentRole: "Participant",
-      currentFocus: ["Continuous Learning", "Projects", "Reflections"],
-      linkedinUrl: "",
+      name: "Dhanush Mendu",
+      tagline: "Quantitative Finance & Systems Architecture",
+      bio: "Engineering high-throughput algorithmic systems, public economic research frameworks, and modern digital interfaces.",
+      currentRole: "Lead Researcher & Engineer",
+      currentFocus: ["Algorithmic Trading", "State Economic Policy", "Distributed Systems", "Design Engineering"],
+      linkedinUrl: "https://linkedin.com",
       email: "admin@example.com",
-      theme: "editorial",
+      theme: "creative",
     },
   });
 
-  await prisma.journalEntry.create({
-    data: {
-      weekNumber: 1,
-      startDate: new Date("2026-09-14"),
-      endDate: new Date("2026-09-18"),
-      title: "Initial Setup & Core Objectives",
-      focus: "Setting up the portfolio workspace, defining weekly learning goals, and outlining initial project scopes.",
-      workCompleted: "Initialized repository structure, configured design system, and drafted foundational notes.",
-      outcomes: "Completed baseline environment configuration.",
-      reflection: "Clear initial structure makes subsequent iterations much faster.",
-      challenges: "Balancing multiple competing priorities.",
-      nextWeekFocus: "Execute first core milestone deliverables.",
-      status: ProjectStatus.PUBLISHED,
-      visibility: Visibility.PUBLIC,
-      publishedAt: new Date(),
-    },
+  await prisma.journalEntry.createMany({
+    data: [
+      {
+        weekNumber: 1,
+        startDate: new Date("2026-10-01"),
+        endDate: new Date("2026-10-07"),
+        title: "Architecting High-Throughput Liquidity Engines",
+        focus: "Designing ultra-low latency order matching algorithms and robust state reconciliation protocols.",
+        workCompleted: "Benchmarked memory-mapped order book structures in Rust and TypeScript. Achieved sub-millisecond execution matching on simulated FIX drops.",
+        outcomes: "Latency reduced by 42% under synthetic peak load.",
+        reflection: "Deterministic state management eliminates race conditions in high-concurrency environments.",
+        challenges: "Managing garbage collection jitter in event loops under heavy network ingestion.",
+        nextWeekFocus: "Integrate WebSocket streaming telemetry and failover clustering.",
+        status: ProjectStatus.PUBLISHED,
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
+      },
+      {
+        weekNumber: 2,
+        startDate: new Date("2026-10-08"),
+        endDate: new Date("2026-10-14"),
+        title: "Macroeconomic Fiscal Simulations & State Policy",
+        focus: "Modelling multi-tier taxation shocks and resource allocation efficiency across municipal sectors.",
+        workCompleted: "Constructed dynamic stochastic general equilibrium (DSGE) parameter matrices using Python and vectorized NumPy pipelines.",
+        outcomes: "Completed baseline economic sensitivity report for regional infrastructure grants.",
+        reflection: "Empirical calibration is only as robust as the granular tax receipt telemetry feeding it.",
+        challenges: "Resolving non-linear convergence loops in multi-variable state tax models.",
+        nextWeekFocus: "Publish interactive policy dashboard and policy brief attachments.",
+        status: ProjectStatus.PUBLISHED,
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
+      },
+      {
+        weekNumber: 3,
+        startDate: new Date("2026-10-15"),
+        endDate: new Date("2026-10-21"),
+        title: "Design Systems & Zero-Latency Component Architecture",
+        focus: "Crafting bespoke dark-mode interfaces with CSS variable tokenization and fluid typography.",
+        workCompleted: "Released the Obsidian & Neon Creative theme featuring Bento grid layouts, micro-interactions, and instant ISR page revalidation.",
+        outcomes: "Lighthouse performance score reached 99/100 across mobile and desktop.",
+        reflection: "Minimalist brutalism and neon precision deliver an unforgettable visual fingerprint.",
+        challenges: "Fine-tuning contrast ratios for accessibility compliance on deep charcoal surfaces.",
+        nextWeekFocus: "Deploy automated CI/CD pipeline and encrypted vault backup protocols.",
+        status: ProjectStatus.PUBLISHED,
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
+      },
+    ],
   });
 
-  console.log("Seeding completed successfully.");
+  console.log("Seeding completed successfully with rich Creative data.");
 }
 
 main()
