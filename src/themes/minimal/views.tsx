@@ -1,130 +1,15 @@
 import Link from 'next/link';
+const date = (value?: string | Date) => value ? new Date(value).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+const Rule = () => <div className="h-px bg-[#181818]" />;
 
 export function MinimalHome({ data }: { data: any }) {
-  const { profile, recentJournals = [] } = data;
-  const latestJournals = recentJournals.slice(0, 3);
-
-  return (
-    <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white">
-      {/* Clean Grid Header */}
-      <header className="border-b border-neutral-200 py-6 px-6 md:px-12 lg:px-16">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="font-mono text-xs tracking-tight uppercase font-medium">
-            {profile?.name || "Alex Rivera"} // PORTFOLIO
-          </div>
-          <nav className="flex items-center gap-8 font-mono text-xs text-neutral-600 uppercase">
-            <Link href="/" className="hover:text-black transition-colors">Index</Link>
-            <Link href="/journal" className="hover:text-black transition-colors">Journal</Link>
-            {profile?.email && <a href={`mailto:${profile.email}`} className="hover:text-black transition-colors">Contact</a>}
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Grid */}
-      <section className="max-w-5xl mx-auto py-24 px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 border-b border-neutral-200">
-        <div className="md:col-span-8 space-y-6">
-          <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest block">
-            {profile?.tagline || "Design Engineer & Researcher"}
-          </span>
-          <h1 className="text-4xl md:text-6xl font-normal tracking-tight text-black leading-tight">
-            {profile?.bio || "Exploring systems architecture, interactive web graphics, and empirical research notes."}
-          </h1>
-        </div>
-
-        <div className="md:col-span-4 border-l border-neutral-200 pl-8 space-y-6 flex flex-col justify-between font-mono text-xs">
-          <div className="space-y-3">
-            <span className="text-neutral-400 uppercase tracking-wider block">Directives</span>
-            <ul className="space-y-2 text-neutral-800">
-              {profile?.currentFocus?.map((f: string) => (
-                <li key={f} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-black rounded-full" />
-                  <span>{f}</span>
-                </li>
-              )) || <li>General Systems</li>}
-            </ul>
-          </div>
-          <div className="pt-6 border-t border-neutral-100">
-            <span className="text-neutral-400 uppercase tracking-wider block">Status</span>
-            <span className="text-emerald-600 font-bold mt-1 block">● System Operational</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto py-20 px-6 md:px-12 space-y-16">
-        <div className="flex items-center justify-between border-b border-neutral-200 pb-4 font-mono text-xs text-neutral-500 uppercase tracking-widest">
-          <span>Recent Journal Entries</span>
-          <Link href="/journal" className="hover:text-black transition-colors">View All &rarr;</Link>
-        </div>
-
-        {latestJournals.length === 0 ? (
-          <p className="font-mono text-xs text-neutral-500">No entries published.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {latestJournals.map((entry: any) => (
-              <Link
-                key={entry.id}
-                href="/journal"
-                className="p-6 border border-neutral-200 bg-neutral-50/50 hover:bg-white hover:border-black transition-all space-y-4 group flex flex-col justify-between"
-              >
-                <div className="space-y-2">
-                  <div className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider flex justify-between">
-                    <span>WK {String(entry.weekNumber).padStart(2, '0')}</span>
-                    <span>{new Date(entry.startDate).toLocaleDateString()}</span>
-                  </div>
-                  <h3 className="text-lg font-medium text-black group-hover:underline">
-                    {entry.title}
-                  </h3>
-                  {entry.focus && (
-                    <p className="text-xs text-neutral-600 line-clamp-3 leading-relaxed">
-                      {entry.focus}
-                    </p>
-                  )}
-                </div>
-                <div className="font-mono text-[10px] uppercase text-neutral-500 pt-3 border-t border-neutral-100">
-                  Read &rarr;
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
-  );
+  const { profile, recentJournals = [] } = data; const entries = recentJournals.slice(0, 4); const focus = profile?.currentFocus || [];
+  return <div className="min-h-screen bg-[#f5f5f2] text-[#181818] selection:bg-[#e63622] selection:text-white"><div className="mx-auto max-w-[1320px] px-5 md:px-10"><header className="grid min-h-20 grid-cols-[1fr_auto] items-center border-b border-[#181818]"><Link href="/" className="font-mono text-xs font-bold uppercase tracking-[-.04em]">{profile?.name || 'Research Office'}</Link><nav className="flex gap-5 font-mono text-[10px] uppercase tracking-wider"><Link href="/" className="border-b-2 border-[#e63622] py-7">Index</Link><Link href="/journal" className="py-7 hover:text-[#e63622]">Archive</Link><Link href="/admin" className="hidden py-7 sm:block hover:text-[#e63622]">Login</Link></nav></header>
+  <main><section className="grid border-b border-[#181818] py-10 md:grid-cols-12 md:py-20"><div className="mb-8 flex md:col-span-2 md:mb-0"><span className="h-3 w-3 bg-[#e63622]" /><span className="ml-3 font-mono text-[10px] uppercase tracking-[.12em]">01 / Profile</span></div><div className="md:col-span-8"><h1 className="max-w-4xl text-5xl font-medium leading-[.95] tracking-[-.065em] md:text-7xl">{profile?.bio || 'A precise index of current research and published notes.'}</h1></div><div className="mt-10 font-mono text-[11px] leading-relaxed md:col-span-2 md:mt-0"><p className="uppercase text-[#777]">Programme</p><p className="mt-2">{profile?.tagline || 'Research index'}</p></div></section>
+  <section className="grid border-b border-[#181818] md:grid-cols-12"><div className="border-b border-[#181818] py-8 md:col-span-2 md:border-b-0 md:border-r"><p className="font-mono text-[10px] uppercase tracking-[.12em] text-[#777]">02 / Scope</p></div><div className="md:col-span-10"><div className="grid md:grid-cols-2">{(focus.length ? focus : ['Research program in formation.']).map((item: string, index: number) => <div key={item} className="flex min-h-28 items-end justify-between border-b border-[#181818] p-6 md:border-l last:border-b-0"><p className="max-w-xs text-xl leading-tight">{item}</p><span className="font-mono text-[10px] text-[#777]">{String(index + 1).padStart(2, '0')}</span></div>)}</div></div></section>
+  <section className="py-12 md:py-20"><div className="mb-8 grid grid-cols-[1fr_auto] items-end"><div><p className="font-mono text-[10px] uppercase tracking-[.12em] text-[#777]">03 / Recent log</p><h2 className="mt-2 text-3xl tracking-[-.05em] md:text-5xl">Journal index</h2></div><Link href="/journal" className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#e63622]">View all →</Link></div><Rule />{entries.length ? <div>{entries.map((entry: any, i: number) => <Link key={entry.id} href="/journal" className="grid gap-4 border-b border-[#181818] py-6 transition-colors hover:bg-[#e9e9e4] md:grid-cols-12 md:items-center"><span className="font-mono text-[11px] text-[#777] md:col-span-1">{String(i + 1).padStart(2, '0')}</span><h3 className="text-2xl tracking-[-.04em] md:col-span-6 md:text-3xl">{entry.title}</h3><p className="text-sm leading-relaxed text-[#555] md:col-span-3">{entry.focus || 'Research record'}</p><span className="font-mono text-[10px] text-[#777] md:col-span-2 md:text-right">{date(entry.startDate)}</span></Link>)}</div> : <p className="py-12 font-mono text-xs uppercase text-[#777]">No records published.</p>}</section></main>
+  <footer className="flex flex-col gap-3 border-t border-[#181818] py-6 font-mono text-[10px] uppercase tracking-wider md:flex-row md:justify-between"><span>© CSPR / {profile?.name || 'Research Office'}</span><div className="flex gap-5">{profile?.email && <a href={`mailto:${profile.email}`} className="hover:text-[#e63622]">Contact</a>}<Link href="/admin" className="hover:text-[#e63622]">Admin</Link></div></footer></div></div>;
 }
 
-export function MinimalJournalArchive({ data }: { data: any }) {
-  const { entries = [] } = data;
-  return (
-    <div className="min-h-screen bg-white text-neutral-900 font-sans py-20 px-6 md:px-12 lg:px-16">
-      <div className="max-w-3xl mx-auto space-y-16">
-        <header className="border-b border-neutral-200 pb-8 space-y-3 font-mono">
-          <span className="text-xs text-neutral-400 uppercase tracking-widest">Archive Index</span>
-          <h1 className="text-4xl font-normal text-black tracking-tight font-sans">Journal Entries</h1>
-        </header>
-
-        <div className="space-y-12 font-sans">
-          {entries.map((entry: any) => (
-            <article key={entry.id} className="border-b border-neutral-200 pb-12 space-y-4">
-              <div className="flex items-center justify-between font-mono text-xs text-neutral-500">
-                <span>WEEK {String(entry.weekNumber).padStart(2, '0')}</span>
-                <span>{new Date(entry.startDate).toLocaleDateString()}</span>
-              </div>
-              <h2 className="text-2xl font-medium text-black">{entry.title}</h2>
-              {entry.focus && <p className="text-sm text-neutral-700 leading-relaxed">{entry.focus}</p>}
-              {entry.workCompleted && (
-                <div className="font-mono text-xs bg-neutral-50 p-5 border border-neutral-200 text-neutral-800 whitespace-pre-wrap">
-                  {entry.workCompleted}
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function MinimalJournalDetail({ data }: { data: any }) {
-  return <MinimalJournalArchive data={{ entries: [data] }} />;
-}
+export function MinimalJournalArchive({ data }: { data: any }) { const { entries = [], profile } = data; return <div className="min-h-screen bg-[#f5f5f2] text-[#181818]"><div className="mx-auto max-w-[1320px] px-5 md:px-10"><header className="flex justify-between border-b border-[#181818] py-6 font-mono text-[10px] uppercase tracking-wider"><Link href="/">← Index</Link><Link href="/admin">Admin</Link></header><main className="py-12 md:py-20"><div className="grid border-b border-[#181818] pb-10 md:grid-cols-12"><div className="font-mono text-[10px] uppercase tracking-wider text-[#777] md:col-span-2">Archive / all records</div><h1 className="mt-5 text-6xl font-medium tracking-[-.07em] md:col-span-8 md:mt-0 md:text-8xl">Journal</h1><p className="mt-5 font-mono text-[10px] uppercase tracking-wider text-[#777] md:col-span-2 md:mt-0">{entries.length} entries filed</p></div><div>{entries.length ? entries.map((entry: any) => <article key={entry.id} className="grid gap-4 border-b border-[#181818] py-8 md:grid-cols-12"><div className="font-mono text-[10px] uppercase text-[#e63622] md:col-span-2">WK {String(entry.weekNumber).padStart(2, '0')}<br /><span className="text-[#777]">{date(entry.startDate)}</span></div><div className="md:col-span-7"><h2 className="text-3xl tracking-[-.05em] md:text-4xl">{entry.title}</h2>{entry.focus && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#555]">{entry.focus}</p>}</div><p className="font-mono text-[10px] uppercase leading-relaxed text-[#777] md:col-span-3">{entry.workCompleted || 'Record filed.'}</p></article>) : <p className="py-14 font-mono text-xs uppercase text-[#777]">No records published.</p>}</div></main></div></div>; }
+export function MinimalJournalDetail({ data }: { data: any }) { return <MinimalJournalArchive data={{ entries: [data] }} />; }
