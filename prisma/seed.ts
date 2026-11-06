@@ -48,7 +48,9 @@ async function main() {
         currentFocus: focus,
         linkedinUrl: "",
         email: adminEmail || "",
-        theme: "editorial",
+        // The installer validates and supplies one of the registered theme IDs.
+        // Keep editorial as the safe default for direct template deployments.
+        theme: process.env.PROFILE_THEME || "editorial",
       },
     });
     console.log("Created neutral default profile.");
