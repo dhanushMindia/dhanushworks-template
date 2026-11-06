@@ -5,83 +5,94 @@ export function EditorialHome({ data }: { data: any }) {
   const latestJournals = recentJournals.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#fbf9f5] text-[#1a1917] font-serif pt-16 pb-24 px-6 md:px-16 lg:px-24">
-      {/* Hero Section */}
-      <header className="max-w-5xl mx-auto border-b-2 border-[#1a1917] pb-12 mb-16 text-center space-y-4">
-        <div className="text-xs uppercase tracking-widest text-[#5c5a53] font-sans">
-          {profile?.tagline || "Professional Portfolio & Journal"}
-        </div>
-        <h1 className="text-5xl md:text-7xl font-normal tracking-tight text-[#1a1917] font-serif">
-          {profile?.name || "Portfolio"}
-        </h1>
-        <p className="max-w-2xl mx-auto text-lg text-[#5c5a53] italic leading-relaxed">
-          {profile?.bio || "Welcome to my digital workspace. Exploring ideas, documenting projects, and sharing weekly journal logs."}
-        </p>
-        <div className="pt-4 flex flex-wrap justify-center gap-6 font-sans text-xs uppercase tracking-widest text-[#8c3030]">
-          <Link href="/journal" className="hover:underline font-semibold">Explore Journal Archive →</Link>
-          {profile?.email && <a href={`mailto:${profile.email}`} className="hover:underline">Contact</a>}
-          {profile?.resumeUrl && <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Resume</a>}
+    <div className="min-h-screen bg-[#f7f5ef] text-[#2c2825] font-serif selection:bg-[#d97757] selection:text-white">
+      {/* Magazine Masthead */}
+      <header className="border-b-2 border-[#2c2825] py-8 px-6 md:px-16 lg:px-24">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="font-sans text-[11px] uppercase tracking-[0.3em] text-[#8c6d53]">
+            Issue No. 01 &bull; {new Date().getFullYear()}
+          </div>
+          <div className="font-serif text-3xl md:text-4xl tracking-tight italic">
+            {profile?.name || "Alex Rivera"}
+          </div>
+          <div className="font-sans text-xs uppercase tracking-widest flex items-center gap-6">
+            <Link href="/journal" className="hover:text-[#d97757] transition-colors">Journal Archive</Link>
+            {profile?.email && <a href={`mailto:${profile.email}`} className="hover:text-[#d97757] transition-colors">Contact</a>}
+          </div>
         </div>
       </header>
 
-      {/* Main Content Layout */}
-      <main className="max-w-5xl mx-auto space-y-16">
-        {/* Profile Introduction / Focus Areas */}
-        {profile?.currentFocus && profile.currentFocus.length > 0 && (
-          <section className="border border-[#e4dccf] bg-[#f2eee3]/40 p-8 md:p-10 space-y-6">
-            <h3 className="font-sans text-xs uppercase tracking-widest text-[#5c5a53] font-semibold border-b border-[#e4dccf] pb-3">
-              Core Focus & Areas of Practice
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {profile.currentFocus.map((f: string) => (
-                <span key={f} className="text-xs font-sans px-3 py-1.5 border border-[#e4dccf] bg-white text-[#1a1917]">
-                  {f}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+      {/* Hero Editorial Spread */}
+      <section className="max-w-6xl mx-auto py-20 px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center border-b border-[#e6e2d6]">
+        <div className="lg:col-span-7 space-y-6">
+          <span className="font-sans text-xs uppercase tracking-[0.25em] text-[#d97757] block">
+            {profile?.tagline || "Design Engineer & Researcher"}
+          </span>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight leading-[1.08] text-[#1f1b18]">
+            Chronicles of form, code, and investigation.
+          </h1>
+          <p className="text-lg text-[#5e554b] font-serif leading-relaxed italic max-w-xl">
+            {profile?.bio || "Exploring systems architecture, interactive web graphics, and empirical research notes."}
+          </p>
+        </div>
 
-        {/* Latest Three Journal Entries */}
-        <section className="space-y-8">
-          <div className="flex items-baseline justify-between border-b border-[#1a1917] pb-4">
-            <h2 className="text-2xl md:text-3xl font-serif text-[#1a1917]">Latest Journal Entries</h2>
-            <Link href="/journal" className="font-sans text-xs uppercase tracking-widest text-[#8c3030] hover:underline">
-              View All ({recentJournals.length}) &rarr;
-            </Link>
-          </div>
+        <div className="lg:col-span-5 bg-[#eee8dc] p-8 md:p-10 border border-[#dcd6c8] space-y-6 shadow-sm">
+          <h3 className="font-sans text-xs uppercase tracking-[0.2em] text-[#2c2825] font-semibold border-b border-[#dcd6c8] pb-3">
+            Editorial Directives
+          </h3>
+          <ul className="space-y-4 font-sans text-xs text-[#5e554b]">
+            {profile?.currentFocus?.map((f: string, i: number) => (
+              <li key={f} className="flex items-center justify-between border-b border-[#e2dccf] pb-2">
+                <span>0{i + 1}. {f}</span>
+                <span className="text-[#d97757] font-mono">ACTIVE</span>
+              </li>
+            )) || (
+              <li className="italic">No current directives loaded.</li>
+            )}
+          </ul>
+        </div>
+      </section>
 
-          {latestJournals.length === 0 ? (
-            <p className="text-sm text-[#5c5a53] italic">No journal entries published yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {latestJournals.map((entry: any) => (
-                <Link
-                  key={entry.id}
-                  href={`/journal`}
-                  className="p-6 border border-[#e4dccf] bg-white hover:border-[#1a1917] transition-all space-y-3 flex flex-col justify-between group"
-                >
-                  <div className="space-y-2">
-                    <span className="font-sans text-[10px] uppercase tracking-widest text-[#8c3030] block">
-                      WEEK {String(entry.weekNumber).padStart(2, '0')}
-                    </span>
-                    <h3 className="font-serif text-xl text-[#1a1917] group-hover:underline">
-                      {entry.title}
-                    </h3>
-                    {entry.focus && (
-                      <p className="text-xs text-[#5c5a53] line-clamp-3 leading-relaxed">
-                        {entry.focus}
-                      </p>
-                    )}
+      {/* Journal Dispatch Feed */}
+      <main className="max-w-6xl mx-auto py-20 px-6 md:px-12 space-y-16">
+        <div className="flex items-baseline justify-between border-b border-[#2c2825] pb-4">
+          <h2 className="text-3xl font-normal italic">Selected Dispatches</h2>
+          <Link href="/journal" className="font-sans text-xs uppercase tracking-widest text-[#d97757] hover:underline">
+            View All Archive &rarr;
+          </Link>
+        </div>
+
+        {latestJournals.length === 0 ? (
+          <p className="font-sans text-sm text-[#5e554b] italic">No dispatches published yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {latestJournals.map((entry: any) => (
+              <Link
+                key={entry.id}
+                href="/journal"
+                className="group bg-white p-8 border border-[#e2dccf] hover:border-[#2c2825] transition-all space-y-4 flex flex-col justify-between shadow-sm"
+              >
+                <div className="space-y-3">
+                  <div className="font-sans text-[10px] uppercase tracking-widest text-[#d97757] flex justify-between">
+                    <span>WEEK {String(entry.weekNumber).padStart(2, '0')}</span>
+                    <span>{new Date(entry.startDate).toLocaleDateString()}</span>
                   </div>
-                  <span className="font-sans text-[11px] text-[#8c3030] pt-2 border-t border-[#f2eee3]">
-                    Read entry &rarr;
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+                  <h3 className="text-2xl font-serif text-[#1f1b18] group-hover:underline leading-snug">
+                    {entry.title}
+                  </h3>
+                  {entry.focus && (
+                    <p className="font-serif text-sm text-[#5e554b] line-clamp-3 leading-relaxed">
+                      {entry.focus}
+                    </p>
+                  )}
+                </div>
+                <div className="font-sans text-xs uppercase tracking-wider text-[#d97757] pt-4 border-t border-[#f2ede4]">
+                  Read Essay &rarr;
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
@@ -90,33 +101,29 @@ export function EditorialHome({ data }: { data: any }) {
 export function EditorialJournalArchive({ data }: { data: any }) {
   const { entries = [] } = data;
   return (
-    <div className="min-h-screen bg-[#fbf9f5] text-[#1a1917] font-serif py-16 px-6 md:px-16 lg:px-24">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <header className="border-b-2 border-[#1a1917] pb-8 text-center space-y-3">
-          <span className="text-xs uppercase tracking-widest text-[#8c3030] font-sans">Chronological Record</span>
-          <h1 className="text-5xl font-normal tracking-tight">Journal Archive</h1>
-          <p className="text-sm text-[#5c5a53] italic">Weekly reflections, notes, and project updates.</p>
+    <div className="min-h-screen bg-[#f7f5ef] text-[#2c2825] font-serif py-20 px-6 md:px-16 lg:px-24">
+      <div className="max-w-4xl mx-auto space-y-16">
+        <header className="border-b-2 border-[#2c2825] pb-10 text-center space-y-4">
+          <span className="font-sans text-xs uppercase tracking-[0.3em] text-[#d97757]">Complete Chronology</span>
+          <h1 className="text-5xl md:text-6xl font-light italic">The Editorial Journal</h1>
+          <p className="font-serif text-sm text-[#5e554b] italic max-w-lg mx-auto">
+            Essays, field notes, and architectural logs published weekly.
+          </p>
         </header>
 
-        <div className="space-y-12">
+        <div className="space-y-16">
           {entries.map((entry: any) => (
-            <article key={entry.id} className="border-b border-[#e4dccf] pb-12 space-y-4">
-              <div className="flex items-center justify-between font-sans text-xs uppercase tracking-widest text-[#5c5a53]">
-                <span className="font-bold text-[#8c3030]">WEEK {String(entry.weekNumber).padStart(2, '0')}</span>
-                <span>{new Date(entry.startDate).toLocaleDateString()} — {new Date(entry.endDate).toLocaleDateString()}</span>
+            <article key={entry.id} className="border-b border-[#e2dccf] pb-16 space-y-6">
+              <div className="flex items-center justify-between font-sans text-xs uppercase tracking-widest text-[#8c6d53]">
+                <span className="font-bold text-[#d97757]">WEEK {String(entry.weekNumber).padStart(2, '0')}</span>
+                <span>{new Date(entry.startDate).toLocaleDateString()} &mdash; {new Date(entry.endDate).toLocaleDateString()}</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-serif text-[#1a1917]">{entry.title}</h2>
-              {entry.focus && <p className="text-base text-[#5c5a53] leading-relaxed">{entry.focus}</p>}
+              <h2 className="text-3xl md:text-4xl font-serif text-[#1f1b18]">{entry.title}</h2>
+              {entry.focus && <p className="font-serif text-base text-[#5e554b] leading-relaxed italic">{entry.focus}</p>}
               {entry.workCompleted && (
-                <div className="text-sm text-[#1a1917] bg-[#f2eee3]/40 p-5 border border-[#e4dccf] space-y-2">
-                  <strong className="font-sans text-xs uppercase block text-[#8c3030]">Work Completed & Methodology</strong>
-                  <p className="whitespace-pre-wrap leading-relaxed">{entry.workCompleted}</p>
-                </div>
-              )}
-              {entry.reflection && (
-                <div className="text-sm text-[#1a1917] bg-white p-5 border border-[#e4dccf] space-y-2">
-                  <strong className="font-sans text-xs uppercase block text-[#5c5a53]">Reflections & Learnings</strong>
-                  <p className="whitespace-pre-wrap leading-relaxed">{entry.reflection}</p>
+                <div className="bg-white p-6 border border-[#e2dccf] space-y-2 font-sans text-xs text-[#2c2825]">
+                  <strong className="uppercase tracking-widest text-[#d97757] block font-mono">Execution Notes</strong>
+                  <p className="whitespace-pre-wrap leading-relaxed font-sans">{entry.workCompleted}</p>
                 </div>
               )}
             </article>
